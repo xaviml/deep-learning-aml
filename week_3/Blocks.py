@@ -115,13 +115,6 @@ class Dense(Layer):
         self.output = dense_forward(x_input, self.W, self.b)
         return self.output
     
-    def backward(self, x_input, grad_output):
-        # get gradients of weights
-        self.grad_W = dense_grad_W(x_input, grad_output, self.W, self.b)
-        self.grad_b = dense_grad_b(x_input, grad_output, self.W, self.b)
-        # propagate the gradient backwards
-        return dense_grad_input(x_input, grad_output, self.W, self.b)
-    
     def get_params(self):
         return [self.W, self.b]
 
@@ -192,18 +185,18 @@ class SequentialNN(object):
         for layer in self.layers:
             self.output = layer.forward(self.output)
         return self.output
-    
+
     def backward(self, x_input, grad_output):
         inputs = [x_input] + [l.output for l in self.layers[:-1]]
         for input_, layer_ in zip(inputs[::-1], self.layers[::-1]):
             grad_output = layer_.backward(input_, grad_output)
-            
+
     def get_params(self):
         params = []
         for layer in self.layers:
             params.extend(layer.get_params())
         return params
-    
+
     def get_params_gradients(self):
         grads = []
         for layer in self.layers:
@@ -303,7 +296,7 @@ class Optimizer(object):
         self.model = model
         self.lr = lr
         self.weight_decay = weight_decay
-        
+
     def update_params(self):
         pass
 
